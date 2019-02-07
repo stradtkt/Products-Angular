@@ -10,6 +10,8 @@ import { Product } from 'src/app/models/Product';
 export class ProductListComponent implements OnInit {
   product = new Product();
   products: Product[];
+  selectedProduct: Product;
+  filter: Product = new Product();
   constructor(private productService: ProductService) { }
 
   ngOnInit() {
@@ -19,11 +21,30 @@ export class ProductListComponent implements OnInit {
       });
   }
 
+  onSelect(product: Product) {
+    this.selectedProduct = this.selectedProduct === product ? null : product;
+  }
+
+  onCreate(product: Product) {
+    this.productService.createProduct(product)
+      .subscribe(createP => {
+        this.products = [...this.products, createP];
+      });
+  }
+
   onRemove(product: Product) {
     this.productService.removeProduct(product.id)
       .subscribe(removeProduct => {
         this.products = this.products.filter(p => p.id !== removeProduct.id);
       });
   }
+
+  onEvent(event: Event) {
+    event.stopPropagation();
+  }
+
+  // clearFilter(): void {
+  //   this.filter = new Product(false);
+  // }
 
 }
